@@ -8,3 +8,4 @@ points at whatever tunnel URL is current, so the link in a syllabus/submission f
 
 To refresh the live URL: run `scripts/go_live.sh` in the `VoiceAI` repo on the host machine — it starts
 the app with `--share`, updates `live.json` here, and pushes.
+## Public URL - https://krishnag1729.github.io/voiceai-demo-page/
