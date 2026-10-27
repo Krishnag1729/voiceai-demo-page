@@ -1,0 +1,370 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>VoiceAI Interview Prep</title>
+<style>
+/* color: warm paper + terracotta (matches the project's build-transcript page); type: Fraunces display / Inter body / JetBrains Mono for code & labels; layout: single column, numbered Q&A grouped under section headers, sticky section nav on wide screens only */
+:root {
+  --bg: #f7f5f1;
+  --surface: #ffffff;
+  --border: #e4ddd2;
+  --text: #241f18;
+  --text-dim: #6b6358;
+  --accent: #b5542c;
+  --accent-soft: #f4e3d8;
+  --code-bg: #f0ece3;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #19160f; --surface: #221e16; --border: #39332570;
+    --text: #efe9df; --text-dim: #a69c8a; --accent: #e08356;
+    --accent-soft: #3a2a1f; --code-bg: #2a2518; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #19160f; --surface: #221e16; --border: #39332570;
+  --text: #efe9df; --text-dim: #a69c8a; --accent: #e08356;
+  --accent-soft: #3a2a1f; --code-bg: #2a2518; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.layout {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 200px minmax(0, 700px);
+  gap: 48px;
+  padding-block: 48px 100px;
+}
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  nav.rail { display: none; }
+}
+header.page { grid-column: 1 / -1; margin-bottom: 8px; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+}
+h1 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(1.9rem, 5vw, 2.5rem); margin: 0 0 10px; text-wrap: balance;
+}
+.meta-line { color: var(--text-dim); font-size: 0.94rem; margin: 0; max-width: 620px; }
+
+nav.rail { position: sticky; top: 24px; align-self: start; font-size: 0.86rem; }
+nav.rail a {
+  display: block; color: var(--text-dim); text-decoration: none;
+  padding: 5px 0; border-left: 2px solid transparent; padding-left: 12px;
+}
+nav.rail a:hover { color: var(--accent); }
+
+main section { margin-bottom: 40px; }
+main section > h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 1.3rem;
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.qa {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 22px; margin-bottom: 14px;
+}
+.qa .q {
+  font-weight: 600; margin: 0 0 8px; display: flex; gap: 10px;
+}
+.qa .q .n {
+  font-family: var(--font-mono); color: var(--accent); font-weight: 500; flex-shrink: 0;
+}
+.qa .a { margin: 0; color: var(--text); }
+.qa .a p { margin: 0 0 10px; }
+.qa .a p:last-child { margin-bottom: 0; }
+.qa code {
+  font-family: var(--font-mono); background: var(--code-bg); padding: 1px 5px;
+  border-radius: 4px; font-size: 0.88em;
+}
+.qa .a ul { margin: 6px 0 10px; padding-left: 20px; }
+.qa .a li { margin-bottom: 4px; }
+.tag {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.68rem;
+  color: var(--accent); background: var(--accent-soft); border-radius: 999px;
+  padding: 2px 9px; margin-left: 8px; letter-spacing: 0.02em;
+}
+footer.page {
+  grid-column: 1 / -1; margin-top: 10px; color: var(--text-dim);
+  font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 18px;
+}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<div class="layout">
+  <header class="page">
+    <p class="eyebrow">Project 3 · Interview Preparation</p>
+    <h1>Defending VoiceAI</h1>
+    <p class="meta-line">An offline English → Hindi voice translator (faster-whisper → NLLB/Opus-MT → MMS-TTS, Gradio UI). Likely questions a reviewer would ask, with answers grounded in this repo's SPEC.md, NOTES.md, PLAN.md and EDGE-DECISION.md.</p>
+  </header>
+
+  <nav class="rail">
+    <a href="#scope">Product &amp; scope</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#models">Model choices</a>
+    <a href="#practice">Engineering practice</a>
+    <a href="#edge">Mobile / edge</a>
+    <a href="#deploy">Deployment</a>
+    <a href="#reflect">Process &amp; AI use</a>
+  </nav>
+
+  <main>
+    <section id="scope">
+      <h2>Product &amp; scope</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q1</span> What does this project actually do, end to end?</p>
+        <div class="a">
+          <p>A local desktop app: the user speaks or types English, the app shows the transcribed English text,
+          translates it to Hindi (Devanagari), and speaks the Hindi aloud. After a one-time
+          <code>download_models.py</code> run, it works with no internet connection at all. The UI is a Gradio
+          page at <code>127.0.0.1:7860</code>, and the pipeline is speech-to-text (faster-whisper) →
+          translation (NLLB-200 or Opus-MT) → text-to-speech (MMS-TTS Hindi).</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q2</span> Why English → Hindi specifically, and why offline?</p>
+        <div class="a">
+          <p>Offline was a hard requirement from the start (SPEC §2, G3): no per-call API cost, no latency to a
+          remote server, no audio leaving the machine, and it keeps working without connectivity — important
+          once the same translation stack was later carried onto a phone (SPEC-edge.md). English→Hindi was
+          chosen as the single language pair to get right rather than building a shallow multi-language system;
+          the non-goals explicitly rule out other language pairs, cloud deployment, accounts, and training.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q3</span> What was deliberately left out, and why?</p>
+        <div class="a">
+          <p>Streaming/real-time simultaneous translation on desktop, Hindi→English, multi-user accounts, and
+          model fine-tuning. Each adds real complexity (streaming needs sentence-boundary detection mid-speech,
+          fine-tuning needs a training pipeline and eval set) that wasn't needed to prove the core idea: a
+          clean, testable, fully offline translate-and-speak pipeline on a normal CPU laptop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>Architecture</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q4</span> Walk me through the architecture.</p>
+        <div class="a">
+          <p><code>app.py</code> (Gradio UI and event handlers) calls <code>core/pipeline.py</code>'s
+          <code>Pipeline.run_audio()</code> / <code>run_text()</code>, which fans out to three independent
+          modules: <code>core/stt.py</code> (Whisper), <code>core/translate.py</code> (NLLB or Opus-MT), and
+          <code>core/tts.py</code> (MMS-TTS). A fourth module, <code>core/text_utils.py</code>, is pure Python
+          with no ML imports — sentence splitting, Hindi number-to-words, and TTS text normalization — and sits
+          underneath translate/tts rather than beside them. <code>core/config.py</code> resolves settings from
+          env vars and CLI flags.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q5</span> Why dependency injection for <code>Pipeline</code>?</p>
+        <div class="a">
+          <p><code>Pipeline</code> receives its STT/translate/TTS components through its constructor instead of
+          constructing them itself. That means unit tests (<code>tests/conftest.py</code>) can inject fakes and
+          exercise all the branching logic — sentence splitting, number normalization, error paths — without ever
+          loading a multi-GB model. It's also why <code>Pipeline(stt=None)</code> works for text-only use
+          (the CLI's <code>--text</code> mode): the component simply isn't needed, so it isn't loaded.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q6</span> Why does <code>core/text_utils.py</code> have to stay free of ML imports?</p>
+        <div class="a">
+          <p>It's the highest-leverage code to get wrong silently (a missed decimal in sentence splitting, a bad
+          number-to-words conversion) and the cheapest to test exhaustively, because it's pure Python. Keeping
+          ML imports out of it means the full test_text_utils.py suite runs in milliseconds, with no model
+          weights anywhere near it — a hard boundary enforced by project convention, not just a style choice.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="models">
+      <h2>Model choices &amp; tradeoffs</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q7</span> Why NLLB-200-distilled-600M as the default translator, with Opus-MT as a "Fast" mode?</p>
+        <div class="a">
+          <p>It's a quality/speed tradeoff, offered explicitly as two modes rather than hidden behind one
+          choice. NLLB is the stronger general-purpose translator; later measurement on the phone track
+          (EDGE-DECISION.md) found Opus-MT scoring roughly <strong>19 chrF++ points below NLLB</strong> on IITB
+          (29.8 vs 48.6) — not something int8 quantization or greedy decoding explained, it's the model itself.
+          Opus-MT still earns its place as the fast path: it's a smaller Marian model with no language-token
+          bookkeeping, useful when latency matters more than nuance.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q8</span> Why faster-whisper (<code>small.en</code>) instead of plain Whisper or a bigger model?</p>
+        <div class="a">
+          <p>faster-whisper is a CTranslate2 reimplementation of Whisper that runs int8 on CPU with no GPU
+          required (SPEC §4, G4), and it bundles its own audio decoding via PyAV, so the app needs no system
+          ffmpeg install. <code>small.en</code> is the size/accuracy point chosen for a normal laptop; on the
+          phone track a different model (Moonshine) was chosen instead, because the constraints there — RAM,
+          disk, battery — are different (see Q12).</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q9</span> Why MMS-TTS for the Hindi voice?</p>
+        <div class="a">
+          <p><code>facebook/mms-tts-hin</code> loads through <code>transformers.VitsModel</code> with no extra
+          runtime dependency beyond what NLLB and Whisper already need — one framework (PyTorch/transformers)
+          for every stage except faster-whisper's own CTranslate2 backend. It outputs a raw float waveform; the
+          sample rate comes from <code>model.config.sampling_rate</code> rather than being hardcoded.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q10</span> What are the licensing implications of these choices?</p>
+        <div class="a">
+          <p>Whisper/faster-whisper is MIT and Opus-MT is Apache-2.0 — both fine for any use. NLLB-200 and
+          MMS-TTS are <strong>CC-BY-NC 4.0</strong>, non-commercial only. That's a real constraint if this ever
+          became a commercial product: the default (NLLB + MMS-TTS) would need to be swapped for permissively
+          licensed alternatives, or the project would need to stay non-commercial. This is recorded in SPEC §4
+          precisely so it isn't discovered late.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="practice">
+      <h2>Engineering practice</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q11</span> The spec and the libraries didn't always agree — how was that handled?</p>
+        <div class="a">
+          <p>The project's own rule (CLAUDE.md, SPEC.md preamble): when the spec and an installed library
+          disagree, trust the library and log the deviation in NOTES.md. Concrete examples from that log:</p>
+          <ul>
+            <li>Gradio 6.x changed its <code>buttons=["copy","download"]</code> API from what 5.x had.</li>
+            <li>transformers 5.17's NLLB tokenizer takes <code>src_lang="eng_Latn"</code> at construction, not
+            per-call.</li>
+            <li><strong>PyAV 19 broke faster-whisper 1.2.1</strong> on a fresh Linux install
+            (<code>decode_audio</code> passed a keyword PyAV 19 no longer accepts). Typed-text input still
+            worked, so only the audio-path integration test caught it; the fix was pinning
+            <code>av&gt;=12,&lt;19</code> in requirements.txt.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q12</span> What's the subtlest bug you had to track down?</p>
+        <div class="a">
+          <p>Loading NLLB or Opus-MT <em>by repo id</em> while online made transformers 5.x silently fetch a
+          community-converted <code>model.safetensors</code> from a Hub pull-request branch in a background
+          thread — sometimes <em>after</em> the model had already loaded from the local <code>.bin</code>, which
+          both defeats "offline after first download" and wastes 2.4&nbsp;GB of bandwidth. The fix was loading
+          from the resolved local cache snapshot path rather than the repo id
+          (<code>resolve_model_path()</code>), with an env var as a second guard. It only showed up because the
+          offline-mode acceptance test (SPEC NF4) actually disabled the network and watched what happened.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q13</span> How do you test an ML pipeline without downloading models in every test run?</p>
+        <div class="a">
+          <p>Two tiers, split by a pytest marker: <code>pytest -m "not slow"</code> runs against the fakes in
+          <code>tests/conftest.py</code> (no network, no weights, fast enough for every commit), and
+          <code>pytest -m slow</code> runs the real models after <code>download_models.py</code> — that's what
+          actually proves STT/MT/TTS behave correctly together. Dependency injection (Q5) is what makes the fast
+          tier possible at all; without it, every pipeline test would need real models loaded.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="edge">
+      <h2>Mobile / edge extension</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q14</span> The spec lists "mobile app" as a non-goal — why is there an <code>android/</code> folder?</p>
+        <div class="a">
+          <p>Scope grew after the desktop app was working. SPEC.md's own scope note (2026-10-23) says it covers
+          only the desktop app and that the project later grew under separate specs: SPEC-edge.md /
+          SPEC-android.md for the phone, SPEC-speed.md / SPEC-hw.md for speed, SPEC-size.md for APK size. The
+          phone stack was proposed, measured against budget numbers, and explicitly approved by the user before
+          being built (EDGE-DECISION.md, "Status: APPROVED").</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q15</span> The phone can't run NLLB-600M — what replaced it, and how did that turn out?</p>
+        <div class="a">
+          <p>Moonshine base (int8, via sherpa-onnx) for speech-to-text, an in-house int8 ONNX export of
+          IndicTrans2's 200M distilled model for translation, and Piper (also sherpa-onnx) for speech. The
+          interesting result: the IndicTrans2 export didn't just fit the phone's budget, it
+          <strong>beat the desktop's NLLB-600M on translation quality</strong> — 51.3 vs 48.6 chrF++ on IITB —
+          while running in about 0.07&nbsp;s per phrase instead of NLLB's cost on CPU. Opus-MT, the only other
+          small off-the-shelf option, was ruled out for being ~19 points worse (Q7). It's a case where a model
+          purpose-built for Indic languages outperformed a larger general multilingual one.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="deploy">
+      <h2>Deployment for this submission</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q16</span> The whole point of this app is "runs offline on your own laptop" — so what does "deployed URL" even mean here?</p>
+        <div class="a">
+          <p>Honestly: there's a bit of tension between the spec's goal (no server, no cloud, fully local) and a
+          course's expectation of a URL that always answers. The approach taken: a small, stable
+          GitHub Pages page is the submitted URL. It reads a <code>live.json</code> file and points at whatever
+          Gradio <code>--share</code> tunnel URL is currently active on the host machine running
+          <code>app.py</code> — so the link in the submission form never changes, even though the actual tunnel
+          URL does every time the app restarts. A helper script (<code>scripts/go_live.sh</code>) starts the
+          app, captures the new tunnel URL, and pushes the update. The honest caveat is in the page itself: it
+          only works while that machine is on and the app is running.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q17</span> What would a "real" cloud deployment require instead?</p>
+        <div class="a">
+          <p>Dropping the offline-first assumptions that shape most of the design: a server that stays warm
+          (today the app lazy-loads the quality translator on first use and expects to run once, locally), some
+          form of request isolation/rate limiting, and a hard look at the CC-BY-NC license on NLLB and MMS-TTS
+          (Q10) before using them in anything resembling a hosted service for others. CPU inference latency
+          under concurrent load would also need revisiting — the current numbers all assume one user on one
+          machine.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="reflect">
+      <h2>Process &amp; working with Claude Code</h2>
+
+      <div class="qa">
+        <p class="q"><span class="n">Q18</span> How was this actually built — what was the workflow?</p>
+        <div class="a">
+          <p>Spec-driven: SPEC.md is the source of truth, PLAN.md turns it into ordered milestones with
+          checkboxes, and every milestone ends with tests, lint, a NOTES.md entry for anything that deviated
+          from plan, and a commit (<code>Mx: &lt;summary&gt;</code>). The build stops at every 🧑 human-check
+          milestone — e.g. actually listening to the Hindi audio, or trying the mic in a browser — rather than
+          assuming something sounds right. That discipline is also why the 8-session build (spanning about
+          three weeks) could pick back up cold each time: the state that mattered was written down in files, not
+          held in memory between sessions.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page">Sources: SPEC.md, NOTES.md, PLAN.md, EDGE-DECISION.md, SPEC-size.md in the VoiceAI repo.</footer>
+</div>
