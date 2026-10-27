@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VoiceAI — English → Hindi</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --card: #121820;
+    --text: #e8edf2;
+    --muted: #93a1ad;
+    --accent: #4fd1a5;
+    --accent-dim: #2a6b55;
+    --offline: #d9794f;
+    --border: #1f2a35;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --text: #0b0f14;
+      --muted: #5b6673;
+      --accent: #148a62;
+      --accent-dim: #d7f3e8;
+      --offline: #b4502c;
+      --border: #e3e8ec;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+  }
+  .badge.live { background: var(--accent-dim); color: var(--accent); }
+  .badge.offline { background: #3a2420; color: var(--offline); }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+  }
+  .dot.live { animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .cta {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #04140e;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .cta:hover { opacity: 0.88; }
+  .cta.disabled {
+    background: var(--border);
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .meta {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 20px;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .desc ul { margin: 8px 0 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>VoiceAI</h1>
+    <p class="subtitle">Offline English → Hindi voice translator</p>
+
+    <div id="badge" class="badge offline"><span class="dot"></span><span id="badge-text">checking…</span></div>
+
+    <a id="cta" class="cta disabled" href="#" target="_blank" rel="noopener">Open Live Demo</a>
+
+    <p class="meta" id="meta"></p>
+
+    <div class="desc">
+      Speech → faster-whisper → NLLB / Opus-MT → MMS-TTS, served by Gradio.
+      <ul>
+        <li>The model runs on a personal machine, not a cloud server, so this page is only "live" while that machine is on and the app is running.</li>
+        <li>No audio is stored anywhere — everything happens locally on that machine.</li>
+      </ul>
+    </div>
+  </div>
+
+<script>
+async function refresh() {
+  const badge = document.getElementById('badge');
+  const badgeText = document.getElementById('badge-text');
+  const cta = document.getElementById('cta');
+  const meta = document.getElementById('meta');
+  try {
+    const res = await fetch('live.json?_=' + Date.now(), { cache: 'no-store' });
+    const data = await res.json();
+    const isLive = !!data.url;
+    badge.className = 'badge ' + (isLive ? 'live' : 'offline');
+    badge.querySelector('.dot').className = 'dot ' + (isLive ? 'live' : '');
+    badgeText.textContent = isLive ? 'Live now' : 'Offline';
+    if (isLive) {
+      cta.href = data.url;
+      cta.classList.remove('disabled');
+      cta.textContent = 'Open Live Demo';
+    } else {
+      cta.classList.add('disabled');
+      cta.textContent = 'Demo offline';
+    }
+    if (data.updated_at) {
+      const d = new Date(data.updated_at);
+      meta.textContent = 'Last updated ' + d.toLocaleString();
+    }
+  } catch (e) {
+    badge.className = 'badge offline';
+    badgeText.textContent = 'Offline';
+    cta.classList.add('disabled');
+    cta.textContent = 'Demo offline';
+  }
+}
+refresh();
+setInterval(refresh, 20000);
+</script>
+</body>
+</html>
